@@ -1,0 +1,118 @@
+---
+title: "Tidy Tuesday 8/24/21"
+author: "NkSmartbucks"
+date: "8/24/2021"
+output: html_document
+---
+
+## LOADING PACKAGE LIBRARIES & FONTS
+```{r cars}
+library(tidyverse)
+library(forcats)
+library(ggridges)
+library(ggsci)
+library(showtext)
+font_add_google("Poppins", "poppins")
+font_add_google("Raleway", "raleway")
+font_add_google("Noto Sans JP", "noto sans jp")
+```
+
+## IMPORTING DATA
+```{r cars}
+lemurs <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-08-24/lemur_data.csv')
+```
+
+## RENAMING TAXONS TO FULL NAMES AND BASIC CLEANING/TIDYING
+```{r cars}
+lemurs_tidy <- lemurs %>% 
+  mutate(taxon = replace(taxon, taxon == "MMUR", "Gray mouse lemur")) %>% 
+  mutate(taxon = replace(taxon, taxon == "CMED", "Fat-tailed dwarf lemur")) %>% 
+  mutate(taxon = replace(taxon, taxon == "DMAD", "Aye-aye")) %>% 
+  mutate(taxon = replace(taxon, taxon == "EFLA", "Blue-eyed black lemur")) %>% 
+  mutate(taxon = replace(taxon, taxon == "EMON", "Mongoose lemur")) %>% 
+  mutate(taxon = replace(taxon, taxon == "ECOL", "Collared brown lemur")) %>% 
+  mutate(taxon = replace(taxon, taxon == "VVV", "Black-and-white ruffed lemur")) %>% 
+  mutate(taxon = replace(taxon, taxon == "NPYG", "Pygmy slow loris")) %>% 
+  mutate(taxon = replace(taxon, taxon == "VRUB", "Red ruffed lemur")) %>% 
+  mutate(taxon = replace(taxon, taxon == "PCOQ", "Coquerel's sifaka")) %>% 
+  mutate(taxon = replace(taxon, taxon == "LCAT", "Ring-tailed lemur")) %>% 
+  mutate(taxon = fct_lump_n(taxon,10)) %>% 
+  rename(age = age_at_wt_y) %>% 
+  filter(taxon != "Other" & !is.na(weight_g)) %>% 
+  select(taxon, sex, name, dob, estimated_dob, litter_size, age_at_death_y, n_known_offspring, weight_g, age, current_resident, preg_status)
+```
+
+## ADDING ROUNDED AGES AS NEW COLUMN
+```{r cars}
+lemurs_tidy$age_rounded <- round(lemurs_tidy$age)
+```
+
+## SORTING BY HEIGHT to examine potential causes for the steep weight slope of the Coquerel lemurs
+```{r cars}
+lemurs_tidy %>% 
+  arrange(-weight_g)
+```
+
+## DENSITY RIDGES/GGRIDGES VIZ
+```{r cars}
+ggplot(data = lemurs_tidy, 
+        mapping = aes(x = age, 
+                      y = fct_reorder(taxon, weight_g),
+                      fill = fct_reorder(taxon, age))) +
+   geom_density_ridges(color = "gray40",
+                       alpha = 0.6,
+                       quantile_lines = TRUE,
+                       quantiles = 2,
+                       stat = "mean",
+                       rel_min_height = 0.001,
+                       show.legend = FALSE,
+                       inherit.aes = TRUE)
+```
+
+# SCATTERPLOT VIZ
+```{r cars}
+showtext_auto()
+showtext_opts(dpi = 96)
+
+ggplot(data = lemurs_tidy) + 
+       geom_point(mapping = aes(x = age_rounded,
+                                y = weight_g,
+                                color = taxon)) +
+  scale_fill_aaas() +
+  theme_minimal() +
+  labs(
+    title = "Weight Vs Age of lemurs at the Duke Lemur Center",
+    subtitle = "Most common lemurs, 1966 - present",
+    caption = "@NkSmartbucks | Data: Duke Lemur Center",
+    x = "Age (y)",
+    y = "Weight (g)"
+  ) +
+  theme(
+    plot.title.position = "plot",
+    plot.background = element_rect("snow3"),
+    plot.title = element_text(family = "raleway", size = 20, face = "bold", vjust = 5, hjust = 1),
+    plot.subtitle = element_text(family = "poppins", color = "gray30", hjust = -0.08, margin = margin(t = -15, b = 25)),
+    axis.text = element_text(family = "poppins"),
+    axis.title = element_text(family = "poppins"),
+    axis.title.y = element_text(vjust = 100, margin = margin(r = 15)),
+    axis.title.x = element_text(vjust = -5, margin = margin(t = 10)),
+    plot.caption = element_text(family = "poppins", size = 8,
+                                color = "gray30", hjust = -0.8, margin = margin(t = 20, b = -25)),
+    panel.border = element_blank(),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+    plot.margin=unit(c(1,1,1,1), "cm"),
+  )
+```
+
+# SCATTERPLOT VIZ WITH FACET WRAP
+```{r cars}
+ggplot(data = lemurs_tidy) + 
+       geom_point(mapping = aes(x = age_rounded,
+                                y = weight_g,
+                                color = taxon)) +
+  facet_wrap(~taxon,
+             nrow = 2,
+             strip.position = "bottom") +
+  theme(strip.background = element_blank())
+```
