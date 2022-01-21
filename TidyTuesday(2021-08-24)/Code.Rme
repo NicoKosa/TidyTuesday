@@ -104,15 +104,3 @@ ggplot(data = lemurs_tidy) +
     plot.margin=unit(c(1,1,1,1), "cm"),
   )
 ```
-
-# SCATTERPLOT VIZ WITH FACET WRAP
-```{r cars}
-ggplot(data = lemurs_tidy) + 
-       geom_point(mapping = aes(x = age_rounded,
-                                y = weight_g,
-                                color = taxon)) +
-  facet_wrap(~taxon,
-             nrow = 2,
-             strip.position = "bottom") +
-  theme(strip.background = element_blank())
-```
