@@ -31,38 +31,3 @@ bird_regions <- bird_baths %>%
 bird_regions %>% 
   drop_na()
 ```
-
-## VIZ
-```{r cars}
-showtext_auto()
-showtext_opts(dpi = 96)
-
-ggplot(data = lemurs_tidy) + 
-       geom_point(mapping = aes(x = age_rounded,
-                                y = weight_g,
-                                color = taxon)) +
-  scale_fill_aaas() +
-  theme_minimal() +
-  labs(
-    title = "Birdwalk Empire",
-    subtitle = "Australian bird gangs and their main territories",
-    caption = "@NkSmartbucks | Data: Cleary et al, 2016",
-    x = "Age (y)",
-    y = "Weight (g)"
-  ) +
-  theme(
-    plot.title.position = "plot",
-    plot.background = element_rect("snow3"),
-    plot.title = element_text(family = "raleway", size = 20, face = "bold", vjust = 5, hjust = 1),
-    plot.subtitle = element_text(family = "poppins", color = "gray30", hjust = -0.08, margin = margin(t = -15, b = 25)),
-    axis.text = element_text(family = "poppins"),
-    axis.title = element_text(family = "poppins"),
-    axis.title.y = element_text(vjust = 100, margin = margin(r = 15)),
-    axis.title.x = element_text(vjust = -5, margin = margin(t = 10)),
-    plot.caption = element_text(family = "poppins", size = 8,
-                                color = "gray30", hjust = -0.8, margin = margin(t = 20, b = -25)),
-    panel.border = element_blank(),
-          panel.grid.major = element_blank(),
-          panel.grid.minor = element_blank(),
-    plot.margin=unit(c(1,1,1,1), "cm"),
-  )
