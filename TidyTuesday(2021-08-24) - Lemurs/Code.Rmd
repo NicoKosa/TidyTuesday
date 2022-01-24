@@ -53,22 +53,6 @@ lemurs_tidy %>%
   arrange(-weight_g)
 ```
 
-## DENSITY RIDGES/GGRIDGES VIZ
-```{r cars}
-ggplot(data = lemurs_tidy, 
-        mapping = aes(x = age, 
-                      y = fct_reorder(taxon, weight_g),
-                      fill = fct_reorder(taxon, age))) +
-   geom_density_ridges(color = "gray40",
-                       alpha = 0.6,
-                       quantile_lines = TRUE,
-                       quantiles = 2,
-                       stat = "mean",
-                       rel_min_height = 0.001,
-                       show.legend = FALSE,
-                       inherit.aes = TRUE)
-```
-
 # SCATTERPLOT VIZ
 ```{r cars}
 showtext_auto()
